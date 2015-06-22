@@ -1,0 +1,24 @@
+{
+  "name": "node-utils",
+  "version": "0.1.0",
+  "description": "A small library of personal utility functions",
+  "main": "node-utils.js",
+  "scripts": {
+    "test": "mocha -u tdd --no-colors --reporter spec node-utils-tests.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/olsonpm/node-utils.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/olsonpm/node-utils/issues"
+  },
+  "homepage": "https://github.com/olsonpm/node-utils#readme",
+  "dependencies": {
+    "chai": "^3.0.0",
+    "component-xor": "0.0.4",
+    "mocha": "^2.2.5"
+  }
+}
