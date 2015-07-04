@@ -4,7 +4,9 @@
 // Imports //
 //---------//
 
-var xor = require('component-xor');
+var xor = require('component-xor')
+    , repeatString = require('repeat-string')
+    , deepEquals = require('deep-eql');
 
 
 //------//
@@ -79,20 +81,6 @@ function isNumeric(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
-function repeatString(str, count) {
-    if (typeof str !== 'string' || isNaN(count)) {
-        throw new Error("Invalid Argument: Utils.repeatString requires a typeof string followed by a number argument");
-    }
-
-    if (count < 1) return '';
-    var result = '';
-    while (count > 1) {
-        if (count & 1) result += str;
-        count >>= 1, str += str;
-    }
-    return result + str;
-}
-
 function everyCombinationOf(arrayN) {
     var argsArray = Array.prototype.slice.call(arguments);
 
@@ -108,7 +96,8 @@ function everyCombinationOf(arrayN) {
             allArgsAreArrays = false;
         }
         i += 1;
-    };
+    }
+
     if (!allArgsAreArrays) {
         throw new Error("Invalid Argument: Utils.everyCombinationOf requires all arguments to be instance_of Array");
     }
@@ -143,12 +132,15 @@ function everyCombinationOf(arrayN) {
 // Exports //
 //---------//
 
-module.exports.xor = xor;
-module.exports.bothNullOrEquals = bothNullOrEquals;
-module.exports.dateEqFn = dateEqFn;
-module.exports.normalizeEqualityFunction = normalizeEqualityFunction;
-module.exports.in_array = in_array;
-module.exports.instance_of = instance_of;
-module.exports.isNumeric = isNumeric;
-module.exports.repeatString = repeatString;
-module.exports.everyCombinationOf = everyCombinationOf;
+module.exports = {
+    xor: xor
+    , bothNullOrEquals: bothNullOrEquals
+    , dateEqFn: dateEqFn
+    , normalizeEqualityFunction: normalizeEqualityFunction
+    , in_array: in_array
+    , instance_of: instance_of
+    , isNumeric: isNumeric
+    , repeatString: repeatString
+    , everyCombinationOf: everyCombinationOf
+    , deepEquals: deepEquals
+};
