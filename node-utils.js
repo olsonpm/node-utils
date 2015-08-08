@@ -64,12 +64,16 @@ function in_array(item, arr) {
 }
 
 function instance_of(obj, fxn) {
-    if (typeof obj !== 'object' || obj === null) {
+    if ((typeof obj !== 'boolean' && typeof obj !== 'object')
+        || obj === null) {
         return false;
     }
 
     var found = false;
-    var objProto = Object.getPrototypeOf(obj);
+    var objProto = (typeof obj === 'boolean')
+        ? new Boolean()
+        : Object.getPrototypeOf(obj);
+
     while (objProto !== null && !found) {
         found = objProto.constructor.name === fxn.name;
         objProto = Object.getPrototypeOf(objProto);
