@@ -64,20 +64,39 @@ function in_array(item, arr) {
 }
 
 function instance_of(obj, fxn) {
-    if ((typeof obj !== 'boolean' && typeof obj !== 'object')
-        || obj === null) {
+    if (obj === null) {
         return false;
     }
 
-    var found = false;
-    var objProto = (typeof obj === 'boolean')
-        ? new Boolean()
-        : Object.getPrototypeOf(obj);
+    var found
+        , objProto;
 
-    while (objProto !== null && !found) {
-        found = objProto.constructor.name === fxn.name;
-        objProto = Object.getPrototypeOf(objProto);
+    switch (typeof obj) {
+        case 'string':
+            objProto = new String();
+            break;
+        case 'boolean':
+            objProto = new Boolean();
+            break;
+        case 'object':
+            objProto = Object.getPrototypeOf(obj);
+            break;
+        default:
+            throw new Error("Invalid Input: instance_of requires obj be typeof string, boolean, or object.");
     }
+
+    do {
+        if (typeof objProto === 'object') {
+            found = (objProto.constructor.name === fxn.name);
+            objProto = Object.getPrototypeOf(objProto);
+        } else if (typeof objProto === 'function') {
+            found = (objProto.name === fxn.name);
+            objProto = objProto.prototype;
+        } else {
+            throw new Error("Invalid State: instance_of requires the prototype chain to consist only of objects that are typeof function or typeof object");
+        }
+    } while (objProto !== null && !found);
+
     return found;
 }
 

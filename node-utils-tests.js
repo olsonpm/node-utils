@@ -8,7 +8,7 @@ var assert = chai.assert;
 chai.config.includeStack = true;
 
 suite("utils.js", function() {
-    test("instance_of", function instance_of() {
+    test("instance_of prototype using new", function instance_of() {
         var aGrandparent
             , aParent
             , aChild;
@@ -58,6 +58,143 @@ suite("utils.js", function() {
         assert.isTrue(Utils.instance_of(wChild, WildParent));
         assert.isTrue(Utils.instance_of(wChild, WildChild));
         assert.isFalse(Utils.instance_of(wChild, Parent));
+    });
+    test("instance_of prototype using Object.create", function instance_of() {
+        var aGrandparent
+            , aParent
+            , aChild;
+        var wParent
+            , wChild;
+
+        function Grandparent() {}
+
+        function Parent() {}
+
+        function Child() {}
+
+        function WildParent() {}
+
+        function WildChild() {}
+
+        Parent.prototype = Object.create(Grandparent);
+        Parent.prototype.constructor = Parent;
+        WildParent.prototype = Object.create(Grandparent);
+        WildParent.prototype.constructor = WildParent;
+
+        Child.prototype = Object.create(Parent);
+        Child.prototype.constructor = Child;
+        WildChild.prototype = Object.create(WildParent);
+        WildChild.prototype.constructor = WildChild;
+
+        aGrandparent = new Grandparent();
+        aParent = new Parent();
+        wParent = new WildParent();
+        aChild = new Child();
+        wChild = new WildChild();
+
+        assert.isTrue(Utils.instance_of(aGrandparent, Grandparent));
+        assert.isFalse(Utils.instance_of(aGrandparent, Parent));
+
+        assert.isTrue(Utils.instance_of(aParent, Grandparent));
+        assert.isTrue(Utils.instance_of(aParent, Parent));
+        assert.isFalse(Utils.instance_of(aParent, Child));
+        assert.isFalse(Utils.instance_of(aParent, WildParent));
+
+        assert.isTrue(Utils.instance_of(aChild, Grandparent));
+        assert.isTrue(Utils.instance_of(aChild, Parent));
+        assert.isTrue(Utils.instance_of(aChild, Child));
+        assert.isFalse(Utils.instance_of(aChild, WildParent));
+
+        assert.isTrue(Utils.instance_of(wChild, Grandparent));
+        assert.isTrue(Utils.instance_of(wChild, WildParent));
+        assert.isTrue(Utils.instance_of(wChild, WildChild));
+        assert.isFalse(Utils.instance_of(wChild, Parent));
+    });
+
+    test("instance_of prototype using both new and Object.create", function instance_of() {
+        var aGrandparent
+            , aParent
+            , aChild;
+        var wParent
+            , wChild;
+
+        function Grandparent() {}
+
+        function Parent() {}
+
+        function Child() {}
+
+        function WildParent() {}
+
+        function WildChild() {}
+
+        Parent.prototype = Object.create(Grandparent);
+        Parent.prototype.constructor = Parent;
+        WildParent.prototype = Object.create(Grandparent);
+        WildParent.prototype.constructor = WildParent;
+
+        Child.prototype = new Parent();
+        Child.prototype.constructor = Child;
+        WildChild.prototype = new WildParent();
+        WildChild.prototype.constructor = WildChild;
+
+        aGrandparent = new Grandparent();
+        aParent = new Parent();
+        wParent = new WildParent();
+        aChild = new Child();
+        wChild = new WildChild();
+
+        assert.isTrue(Utils.instance_of(aGrandparent, Grandparent));
+        assert.isFalse(Utils.instance_of(aGrandparent, Parent));
+
+        assert.isTrue(Utils.instance_of(aParent, Grandparent));
+        assert.isTrue(Utils.instance_of(aParent, Parent));
+        assert.isFalse(Utils.instance_of(aParent, Child));
+        assert.isFalse(Utils.instance_of(aParent, WildParent));
+
+        assert.isTrue(Utils.instance_of(aChild, Grandparent));
+        assert.isTrue(Utils.instance_of(aChild, Parent));
+        assert.isTrue(Utils.instance_of(aChild, Child));
+        assert.isFalse(Utils.instance_of(aChild, WildParent));
+
+        assert.isTrue(Utils.instance_of(wChild, Grandparent));
+        assert.isTrue(Utils.instance_of(wChild, WildParent));
+        assert.isTrue(Utils.instance_of(wChild, WildChild));
+        assert.isFalse(Utils.instance_of(wChild, Parent));
+    });
+
+    test("instance_of Boolean and String prototypes", function instance_of() {
+        function BooleanA() {}
+        BooleanA.prototype = Object.create(Boolean);
+        BooleanA.prototype.constructor = BooleanA;
+
+        function BooleanB(b) {}
+        BooleanB.prototype = Object.create(BooleanA);
+        BooleanB.prototype.constructor = BooleanB;
+
+        var a = new BooleanA();
+        var b = new BooleanB();
+        assert.isTrue(Utils.instance_of(b, BooleanB));
+        assert.isTrue(Utils.instance_of(a, BooleanA));
+        assert.isTrue(Utils.instance_of(b, BooleanA));
+        assert.isTrue(Utils.instance_of(a, Boolean));
+        assert.isTrue(Utils.instance_of(b, Boolean));
+
+        function StringA() {}
+        StringA.prototype = Object.create(String);
+        StringA.prototype.constructor = StringA;
+
+        function StringB(b) {}
+        StringB.prototype = Object.create(StringA);
+        StringB.prototype.constructor = StringB;
+
+        var a = new StringA();
+        var b = new StringB();
+        assert.isTrue(Utils.instance_of(b, StringB));
+        assert.isTrue(Utils.instance_of(a, StringA));
+        assert.isTrue(Utils.instance_of(b, StringA));
+        assert.isTrue(Utils.instance_of(a, String));
+        assert.isTrue(Utils.instance_of(b, String));
     });
 
     test("is_numeric", function is_numeric() {
