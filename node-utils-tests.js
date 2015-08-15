@@ -163,7 +163,7 @@ suite("utils.js", function() {
         assert.isFalse(Utils.instance_of(wChild, Parent));
     });
 
-    test("instance_of Boolean and String prototypes", function instance_of() {
+    test("instance_of Boolean, String, and Number prototypes", function instance_of() {
         function BooleanA() {}
         BooleanA.prototype = Object.create(Boolean);
         BooleanA.prototype.constructor = BooleanA;
@@ -184,17 +184,44 @@ suite("utils.js", function() {
         StringA.prototype = Object.create(String);
         StringA.prototype.constructor = StringA;
 
-        function StringB(b) {}
+        function StringB() {}
         StringB.prototype = Object.create(StringA);
         StringB.prototype.constructor = StringB;
 
-        var a = new StringA();
-        var b = new StringB();
+        a = new StringA();
+        b = new StringB();
         assert.isTrue(Utils.instance_of(b, StringB));
         assert.isTrue(Utils.instance_of(a, StringA));
         assert.isTrue(Utils.instance_of(b, StringA));
         assert.isTrue(Utils.instance_of(a, String));
         assert.isTrue(Utils.instance_of(b, String));
+        assert.isTrue(Utils.instance_of('a', String));
+
+        function NumberA() {}
+        NumberA.prototype = Object.create(Number);
+        NumberA.prototype.constructor = NumberA;
+
+        function NumberB() {}
+        NumberB.prototype = Object.create(NumberA);
+        NumberB.prototype.constructor = NumberB;
+
+        a = new NumberA();
+        b = new NumberB();
+        assert.isTrue(Utils.instance_of(b, NumberB));
+        assert.isTrue(Utils.instance_of(a, NumberA));
+        assert.isTrue(Utils.instance_of(b, NumberA));
+        assert.isTrue(Utils.instance_of(a, Number));
+        assert.isTrue(Utils.instance_of(b, Number));
+        assert.isTrue(Utils.instance_of(1, Number));
+    });
+
+    test("instance_of with string instead of Function", function instance_of() {
+        function Grandparent() {}
+        assert.isTrue(Utils.instance_of(new Grandparent(), 'Grandparent'));
+        assert.isTrue(Utils.instance_of('a', 'String'));
+        assert.isTrue(Utils.instance_of(true, 'Boolean'));
+        assert.isFalse(Utils.instance_of('a', 'string'));
+        assert.isFalse(Utils.instance_of(false, 'oolean'));
     });
 
     test("is_numeric", function is_numeric() {
@@ -209,7 +236,7 @@ suite("utils.js", function() {
         assert.strictEqual(Utils.repeatString("a", 5), "aaaaa");
         assert.throws(function() {
             Utils.repeatString(1, "ok");
-        })
+        });
     });
 
     test("every_combination_of", function every_combination_of() {

@@ -68,6 +68,13 @@ function instance_of(obj, fxn) {
         return false;
     }
 
+    var fxnName;
+    if (typeof fxn === 'string') {
+        fxnName = fxn;
+    } else {
+        fxnName = fxn.name;
+    }
+
     var found
         , objProto;
 
@@ -78,6 +85,9 @@ function instance_of(obj, fxn) {
         case 'boolean':
             objProto = new Boolean();
             break;
+        case 'number':
+            objProto = new Number();
+            break;
         case 'object':
             objProto = Object.getPrototypeOf(obj);
             break;
@@ -87,10 +97,10 @@ function instance_of(obj, fxn) {
 
     do {
         if (typeof objProto === 'object') {
-            found = (objProto.constructor.name === fxn.name);
+            found = (objProto.constructor.name === fxnName);
             objProto = Object.getPrototypeOf(objProto);
         } else if (typeof objProto === 'function') {
-            found = (objProto.name === fxn.name);
+            found = (objProto.name === fxnName);
             objProto = objProto.prototype;
         } else {
             throw new Error("Invalid State: instance_of requires the prototype chain to consist only of objects that are typeof function or typeof object");
