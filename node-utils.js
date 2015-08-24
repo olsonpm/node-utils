@@ -110,6 +110,16 @@ function instance_of(obj, fxn) {
     return found;
 }
 
+function inheritsFrom(child, parent) {
+    if (typeof child !== 'function'
+        || (typeof parent !== 'function' && typeof parent !== 'string')
+    ) {
+        throw new Error("Invalid Arguments: Both child and parent must be functions");
+    }
+
+    return instance_of(child.prototype, parent);
+}
+
 function isNumeric(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
 }
@@ -171,6 +181,7 @@ module.exports = {
     , dateEqFn: dateEqFn
     , normalizeEqualityFunction: normalizeEqualityFunction
     , in_array: in_array
+    , inheritsFrom: inheritsFrom
     , instance_of: instance_of
     , isNumeric: isNumeric
     , repeatString: repeatString

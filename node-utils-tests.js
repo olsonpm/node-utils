@@ -8,7 +8,7 @@ var assert = chai.assert;
 chai.config.includeStack = true;
 
 suite("utils.js", function() {
-    test("instance_of prototype using new", function instance_of() {
+    test("instance_of prototype using new", function instance_of_inheritsFrom1() {
         var aGrandparent
             , aParent
             , aChild;
@@ -41,29 +41,14 @@ suite("utils.js", function() {
         aChild = new Child();
         wChild = new WildChild();
 
-        assert.isTrue(Utils.instance_of(aGrandparent, Grandparent));
-        assert.isFalse(Utils.instance_of(aGrandparent, Parent));
-
-        assert.isTrue(Utils.instance_of(aParent, Grandparent));
-        assert.isTrue(Utils.instance_of(aParent, Parent));
-        assert.isFalse(Utils.instance_of(aParent, Child));
-        assert.isFalse(Utils.instance_of(aParent, WildParent));
-
-        assert.isTrue(Utils.instance_of(aChild, Grandparent));
-        assert.isTrue(Utils.instance_of(aChild, Parent));
-        assert.isTrue(Utils.instance_of(aChild, Child));
-        assert.isFalse(Utils.instance_of(aChild, WildParent));
-
-        assert.isTrue(Utils.instance_of(wChild, Grandparent));
-        assert.isTrue(Utils.instance_of(wChild, WildParent));
-        assert.isTrue(Utils.instance_of(wChild, WildChild));
-        assert.isFalse(Utils.instance_of(wChild, Parent));
+        testInheritance(Grandparent, Parent, Child, WildParent, WildChild
+            , aGrandparent, aParent, aChild, wParent, wChild);
     });
-    test("instance_of prototype using Object.create", function instance_of() {
+    test("instance_of prototype using Object.create", function instance_of_inheritsFrom2() {
         var aGrandparent
             , aParent
-            , aChild;
-        var wParent
+            , aChild
+            , wParent
             , wChild;
 
         function Grandparent() {}
@@ -92,26 +77,11 @@ suite("utils.js", function() {
         aChild = new Child();
         wChild = new WildChild();
 
-        assert.isTrue(Utils.instance_of(aGrandparent, Grandparent));
-        assert.isFalse(Utils.instance_of(aGrandparent, Parent));
-
-        assert.isTrue(Utils.instance_of(aParent, Grandparent));
-        assert.isTrue(Utils.instance_of(aParent, Parent));
-        assert.isFalse(Utils.instance_of(aParent, Child));
-        assert.isFalse(Utils.instance_of(aParent, WildParent));
-
-        assert.isTrue(Utils.instance_of(aChild, Grandparent));
-        assert.isTrue(Utils.instance_of(aChild, Parent));
-        assert.isTrue(Utils.instance_of(aChild, Child));
-        assert.isFalse(Utils.instance_of(aChild, WildParent));
-
-        assert.isTrue(Utils.instance_of(wChild, Grandparent));
-        assert.isTrue(Utils.instance_of(wChild, WildParent));
-        assert.isTrue(Utils.instance_of(wChild, WildChild));
-        assert.isFalse(Utils.instance_of(wChild, Parent));
+        testInheritance(Grandparent, Parent, Child, WildParent, WildChild
+            , aGrandparent, aParent, aChild, wParent, wChild);
     });
 
-    test("instance_of prototype using both new and Object.create", function instance_of() {
+    test("instance_of prototype using both new and Object.create", function instance_of_inheritsFrom3() {
         var aGrandparent
             , aParent
             , aChild;
@@ -144,26 +114,11 @@ suite("utils.js", function() {
         aChild = new Child();
         wChild = new WildChild();
 
-        assert.isTrue(Utils.instance_of(aGrandparent, Grandparent));
-        assert.isFalse(Utils.instance_of(aGrandparent, Parent));
-
-        assert.isTrue(Utils.instance_of(aParent, Grandparent));
-        assert.isTrue(Utils.instance_of(aParent, Parent));
-        assert.isFalse(Utils.instance_of(aParent, Child));
-        assert.isFalse(Utils.instance_of(aParent, WildParent));
-
-        assert.isTrue(Utils.instance_of(aChild, Grandparent));
-        assert.isTrue(Utils.instance_of(aChild, Parent));
-        assert.isTrue(Utils.instance_of(aChild, Child));
-        assert.isFalse(Utils.instance_of(aChild, WildParent));
-
-        assert.isTrue(Utils.instance_of(wChild, Grandparent));
-        assert.isTrue(Utils.instance_of(wChild, WildParent));
-        assert.isTrue(Utils.instance_of(wChild, WildChild));
-        assert.isFalse(Utils.instance_of(wChild, Parent));
+        testInheritance(Grandparent, Parent, Child, WildParent, WildChild
+            , aGrandparent, aParent, aChild, wParent, wChild);
     });
 
-    test("instance_of Boolean, String, and Number prototypes", function instance_of() {
+    test("instance_of Boolean, String, and Number prototypes", function instance_of_inheritsFrom4() {
         function BooleanA() {}
         BooleanA.prototype = Object.create(Boolean);
         BooleanA.prototype.constructor = BooleanA;
@@ -179,6 +134,9 @@ suite("utils.js", function() {
         assert.isTrue(Utils.instance_of(b, BooleanA));
         assert.isTrue(Utils.instance_of(a, Boolean));
         assert.isTrue(Utils.instance_of(b, Boolean));
+        assert.isTrue(Utils.inheritsFrom(BooleanB, BooleanA));
+        assert.isTrue(Utils.inheritsFrom(BooleanB, Boolean));
+        assert.isTrue(Utils.inheritsFrom(BooleanA, Boolean));
 
         function StringA() {}
         StringA.prototype = Object.create(String);
@@ -196,6 +154,9 @@ suite("utils.js", function() {
         assert.isTrue(Utils.instance_of(a, String));
         assert.isTrue(Utils.instance_of(b, String));
         assert.isTrue(Utils.instance_of('a', String));
+        assert.isTrue(Utils.inheritsFrom(StringB, StringA));
+        assert.isTrue(Utils.inheritsFrom(StringB, String));
+        assert.isTrue(Utils.inheritsFrom(StringA, String));
 
         function NumberA() {}
         NumberA.prototype = Object.create(Number);
@@ -213,15 +174,30 @@ suite("utils.js", function() {
         assert.isTrue(Utils.instance_of(a, Number));
         assert.isTrue(Utils.instance_of(b, Number));
         assert.isTrue(Utils.instance_of(1, Number));
+        assert.isTrue(Utils.inheritsFrom(NumberB, NumberA));
+        assert.isTrue(Utils.inheritsFrom(NumberB, Number));
+        assert.isTrue(Utils.inheritsFrom(NumberA, Number));
     });
 
-    test("instance_of with string instead of Function", function instance_of() {
+    test("instance_of and inheritsFrom with string instead of Function", function instance_of_inheritsFrom5() {
         function Grandparent() {}
+
+        function Parent() {}
+        Parent.prototype = Object.create(Grandparent.prototype);
+        Parent.constructor = Parent;
+
         assert.isTrue(Utils.instance_of(new Grandparent(), 'Grandparent'));
         assert.isTrue(Utils.instance_of('a', 'String'));
         assert.isTrue(Utils.instance_of(true, 'Boolean'));
         assert.isFalse(Utils.instance_of('a', 'string'));
         assert.isFalse(Utils.instance_of(false, 'oolean'));
+        assert.isTrue(Utils.inheritsFrom(Parent, 'Grandparent'));
+    });
+
+    test("other builtin javascript types", function instance_of6() {
+        assert.isTrue(Utils.instance_of(new Date(), Date));
+        assert.isTrue(Utils.instance_of([1, 2], Array));
+        assert.isTrue(Utils.instance_of({}, Object));
     });
 
     test("is_numeric", function is_numeric() {
@@ -313,3 +289,39 @@ suite("utils.js", function() {
         });
     });
 });
+
+
+//--------------//
+// Helpers Fxns //
+//--------------//
+
+function testInheritance(Grandparent, Parent, Child, WildParent, WildChild
+    , aGrandparent, aParent, aChild, wParent, wChild) {
+
+    assert.isTrue(Utils.instance_of(aGrandparent, Grandparent));
+    assert.isFalse(Utils.instance_of(aGrandparent, Parent));
+
+    assert.isTrue(Utils.instance_of(aParent, Grandparent));
+    assert.isTrue(Utils.instance_of(aParent, Parent));
+    assert.isFalse(Utils.instance_of(aParent, Child));
+    assert.isFalse(Utils.instance_of(aParent, WildParent));
+
+    assert.isTrue(Utils.instance_of(aChild, Grandparent));
+    assert.isTrue(Utils.instance_of(aChild, Parent));
+    assert.isTrue(Utils.instance_of(aChild, Child));
+    assert.isFalse(Utils.instance_of(aChild, WildParent));
+
+    assert.isTrue(Utils.instance_of(wChild, Grandparent));
+    assert.isTrue(Utils.instance_of(wChild, WildParent));
+    assert.isTrue(Utils.instance_of(wChild, WildChild));
+    assert.isFalse(Utils.instance_of(wChild, Parent));
+
+    assert.isTrue(Utils.inheritsFrom(Parent, Grandparent));
+    assert.isTrue(Utils.inheritsFrom(WildParent, Grandparent));
+    assert.isTrue(Utils.inheritsFrom(Child, Grandparent));
+    assert.isTrue(Utils.inheritsFrom(WildChild, Grandparent));
+    assert.isTrue(Utils.inheritsFrom(Child, Parent));
+    assert.isTrue(Utils.inheritsFrom(WildChild, WildParent));
+    assert.isFalse(Utils.inheritsFrom(Child, WildParent));
+    assert.isFalse(Utils.inheritsFrom(Grandparent, Child));
+}
